@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crowfounding/auth"
 	"crowfounding/handler"
 	"crowfounding/user"
 	"log"
@@ -20,8 +21,9 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
+	authService := auth.NewService()
 
-	userHander := handler.NewUserHandler(userService)
+	userHander := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
 	api := router.Group("/api/v1")
@@ -29,6 +31,7 @@ func main() {
 	api.POST("/users", userHander.RegisterUser)
 	api.POST("/sessions", userHander.Login)
 	api.POST("/email_checkers", userHander.CheckEmailAvability)
+	api.POST("/avatars", userHander.UploadAvatar)
 
 	router.Run()
 }
